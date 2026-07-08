@@ -2,7 +2,6 @@ name: rederma
 services:
   db:
     image: mysql:8.0.44 # from production [6-jul-2026]
-    restart: always
     ports:
       - "3306:3306" # for local development only
     environment:
@@ -17,7 +16,6 @@ services:
     depends_on:
       - db
     image: wordpress:php8.3-fpm-alpine # from production [6-jul-2026]
-    restart: always
     volumes:
       - app_data:/var/www/html
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
@@ -41,7 +39,6 @@ services:
     depends_on:
       - wordpress
     image: nginx:1.24-alpine # from production [6-jul-2026]
-    restart: always
     ports:
       - "80:80" # for local development only
     volumes:
