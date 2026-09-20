@@ -1,7 +1,7 @@
 name: rederma
 services:
   db:
-    image: mysql:8.0.44 # from production [6-jul-2026]
+    image: mysql:8.0.44 # from production [2026-09-20]
     ports:
       - "3306:3306" # for local development only
     environment:
@@ -15,7 +15,7 @@ services:
   wordpress:
     depends_on:
       - db
-    image: wordpress:php8.3-fpm-alpine # from production [6-jul-2026]
+    image: wordpress:7.1.1-php8.3-fpm-alpine # from production [2026-09-20]
     volumes:
       - app_data:/var/www/html # all site files live here — core, themes, plugins, uploads
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
@@ -24,8 +24,11 @@ services:
       WORDPRESS_DB_USER: wordpressuser
       WORDPRESS_DB_PASSWORD: wordpresspassword
       WORDPRESS_DB_NAME: wordpress
+      # The image defines WP_DEBUG itself from this variable. Defining it again
+      # in WORDPRESS_CONFIG_EXTRA below produces "Constant WP_DEBUG already
+      # defined" on every request.
+      WORDPRESS_DEBUG: "1"
       WORDPRESS_CONFIG_EXTRA: |
-        define('WP_DEBUG', true);
         define('WP_DEBUG_LOG', true);
         define('WP_DEBUG_DISPLAY', true);
         define('WP_MEMORY_LIMIT', '512M');
@@ -38,7 +41,7 @@ services:
   webserver:
     depends_on:
       - wordpress
-    image: nginx:1.24-alpine # from production [6-jul-2026]
+    image: nginx:1.28.0-alpine # from production [2026-09-20]
     ports:
       - "80:80" # for local development only
     volumes:
